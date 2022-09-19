@@ -164,3 +164,14 @@ PurchasedProductsList initPurchasedProductsList()
     return ppl;
 }
 
+
+//Add a new product
+ProductsList addProduct(ProductsList* pl, Product p)
+{
+    pl->size++;
+    pl->products = realloc(pl->products, (pl->size) * sizeof(*pl->products));
+    pl->products[pl->len] = p;
+    pl->len++;
+    return *pl;
+}
+
