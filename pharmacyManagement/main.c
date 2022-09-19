@@ -107,7 +107,6 @@ int main()
     return 0;
 }
 
-
 Product initProduct(int code, char* name, int quantity, double price)
 {
     Product p;
@@ -257,6 +256,14 @@ void displayProduct(Product p)
     printf("price : %lf\n", p.price);
     printf("quantity : %d\n\n", p.quantity);
 }
+
+void displayProducts(ProductsList* pl)
+{
+    for (int i = 0; i < pl->len; i++)
+    {
+        displayProduct(pl->products[i]);
+    }
+}
 //**********************************************
 //Stock status: allows you to display products whose quantity is less than 3.
 ProductsList stockStatus(ProductsList* pl)
@@ -283,4 +290,22 @@ ProductsList updateStock(ProductsList* pl, int code,  int quantity)
     return *pl;
 }
 
+//Supprimer les produits par:
+//Code
+ProductsList DeleteProductByCode(ProductsList* pl, int code)
+{
+    int pos = findProductByCode(pl, code);
+    if(pos != -1)
+    {
+        for (int i = pos; i < pl->len - 1; i++)
+        {
+            pl->products[i] = pl->products[i+1];
+        }
 
+        pl->size--;
+        pl->products = realloc(pl->products, (pl->size) * sizeof(*pl->products));
+        pl->len--;
+        return *pl;
+
+    }
+}
