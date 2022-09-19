@@ -175,3 +175,19 @@ ProductsList addProduct(ProductsList* pl, Product p)
     return *pl;
 }
 
+int ProductsAlphabeticallyAsc(ProductsList* pl)
+{
+    Product tempP;
+    int len = pl->len;
+    int i,j;
+    for(i=0;i<len;i++){
+      for(j=i+1;j<len;j++){
+         if(strcmp(pl->products[i].name,pl->products[j].name)>0){
+            tempP = pl->products[i];
+            pl->products[i] = pl->products[j];
+            pl->products[j] = tempP;
+        }
+      }
+   }
+}
+
