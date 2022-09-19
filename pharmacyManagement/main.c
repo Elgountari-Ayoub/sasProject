@@ -66,7 +66,6 @@ int ProductsAlphabeticallyAsc(ProductsList* pl);
 //- list all products in descending order of price.
 int ProductsByPriceDesc(ProductsList* pl);
 
-
 //Buy product: allows you to update the quantity after entering the product code and the quantity to be deducted
 //      N.B: For each product purchased, you must record the price including VAT and the date of purchase.
 ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, int quantity);
@@ -89,16 +88,16 @@ ProductsList updateStock(ProductsList* pl, int code,  int quantity);
 ProductsList DeleteProductByCode(ProductsList* pl, int code);
 
 //Display the total prices of products sold in the current day
-double totalPricesToday(PurchasedProductsList pp);
+double totalPricesToday(PurchasedProductsList* pp);
 
 //Display the average price of products sold on the current day
-double averagePricesToday(PurchasedProductsList pp);
+double averagePricesToday(PurchasedProductsList* pp);
 
 //Display the Max price of products sold on the current day
-double maxPriceToday(PurchasedProductsList pp);
+double maxPriceToday(PurchasedProductsList* pp);
 
 //Display the Min of the prices of the products sold in the current day
-double minPriceToday(PurchasedProductsList pp);
+double minPriceToday(PurchasedProductsList* pp);
 
 //Helper functions
 bool checkQuantity(ProductsList* pl, int code, int quantity);
@@ -161,7 +160,6 @@ PurchasedProductsList initPurchasedProductsList()
     ppl.size = 1;
     return ppl;
 }
-
 
 //Add a new product
 ProductsList addProduct(ProductsList* pl, Product p)
@@ -256,11 +254,29 @@ void displayProduct(Product p)
     printf("quantity : %d\n\n", p.quantity);
 }
 
+
+void displayPurchasedProduct(PurchasedProduct pp)
+{
+    printf("code  : %\i\n", pp.code);
+    printf("price : %lf\n", pp.priceTTC);
+    printf("date  : %d-%d-%d-%d-%d-%d\n\n", pp.date.year, pp.date.mon, pp.date.day, pp.date.hour, pp.date.min ,pp.date.sec);
+}
+
 void displayProducts(ProductsList* pl)
 {
     for (int i = 0; i < pl->len; i++)
     {
         displayProduct(pl->products[i]);
+    }
+}
+
+void displayPurchasedProductsList(PurchasedProductsList* ppl)
+{
+    for (int i = 0; i < ppl->len; i++)
+    {
+        printf("len = %i\n",ppl->len);
+        displayPurchasedProduct(ppl->pps[i]);
+
     }
 }
 
@@ -325,17 +341,26 @@ ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, 
         int pos = findProductByCode(pl, code);
 
         int code = pl->products[pos].code;
-        double priceTTC =  pl->products[pos].price + (pl->products[pos].price * 0.15);
+        double price =  pl->products[pos].price;
 
         PurchasedProduct pp;
-        pp = initPurchasedProduct(code, priceTTC);
+        pp = initPurchasedProduct(code, price);
 
         addPurchasedProduct(ppl,pp);
-
-        //DeleteProductByCode(pl, code);
 
         pl->products[pos].quantity -= quantity;
 
     }
     return *pl;
+}
+
+//Display the total prices of products sold in the current day
+double totalPricesToday(PurchasedProductsList* pp)
+{
+    double total = 0;
+    for (int i = 0; i < pp->len; i++)
+    {
+        total += pp->pps[i].priceTTC;
+    }
+    return total;
 }
