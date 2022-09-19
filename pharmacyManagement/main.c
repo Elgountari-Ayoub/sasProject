@@ -69,7 +69,7 @@ int ProductsByPriceDesc(ProductsList* pl);
 
 //Buy product: allows you to update the quantity after entering the product code and the quantity to be deducted
 //      N.B: For each product purchased, you must record the price including VAT and the date of purchase.
-ProductsList buyProduct(ProductsList* pl, int code, int productsNumber);
+ProductsList buyProduct(ProductsList* pl, int code, int quantity);
 
 //Search Products By:
 //Coded
@@ -82,7 +82,7 @@ int findProductByQuantity(ProductsList* pl, int quantity);
 ProductsList stockStatus(ProductsList* pl);
 
 //Alimenter le stock: permet de mettre à jour la quantité après avoir introduit le code produit et la quantité à ajouter.
-ProductsList updateStock(ProductsList* pl, int code,  double quantity);
+ProductsList updateStock(ProductsList* pl, int code,  int quantity);
 
 //Supprimer les produits par:
 //Code
@@ -225,16 +225,14 @@ int findProductByCode(ProductsList* pl, int code)
 
 int findProductByQuantity(ProductsList* pl, int quantity)
 {
-     int pos = -1;
     for(int i = 0; i < pl->len; i++)
     {
         if(pl->products[i].quantity == quantity)
         {
-            pos = i;
-            return pos;
+            displayProduct(pl->products[i]);
         }
     }
-    return pos;
+    return 0;
 }
 
 //***********************Helper functions
@@ -270,5 +268,19 @@ ProductsList stockStatus(ProductsList* pl)
             displayProduct(pl->products[i]);
         }
     }
+    return *pl;
 }
+
+//Alimenter le stock: permet de mettre à jour la quantité après avoir introduit le code produit et la quantité à ajouter.
+ProductsList updateStock(ProductsList* pl, int code,  int quantity)
+{
+    int pos = findProductByCode(pl, code);
+    if(pos != -1 && quantity >= 0)
+    {
+        printf("pos = %i\n", pos);
+        pl->products[pos].quantity += quantity;
+    }
+    return *pl;
+}
+
 
