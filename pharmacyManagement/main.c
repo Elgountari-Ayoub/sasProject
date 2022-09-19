@@ -76,13 +76,13 @@ ProductsList buyProduct(ProductsList* pl, int code, int productsNumber);
 int findProductByCode(ProductsList* pl, int code);
 
 //Quantitiy.
-int findProductByQuantity(ProductsList* pl, int quantity);
+int findProductByQuantity(ProductsList* pl, double quantity);
 
 //Stock status: allows you to display products whose quantity is less than 3.
 ProductsList stockStatus(ProductsList pl);
 
 //Alimenter le stock: permet de mettre à jour la quantité après avoir introduit le code produit et la quantité à ajouter.
-ProductsList updateStock(ProductsList* pl, int code, int ammount);
+ProductsList updateStock(ProductsList* pl, int code,  double quantity);
 
 //Supprimer les produits par:
 //Code
@@ -99,9 +99,11 @@ double maxPriceToday(PurchasedProductsList pp);
 
 //Display the Min of the prices of the products sold in the current day
 double minPriceToday(PurchasedProductsList pp);
+
+//Helper functions
+bool checkQuantity(ProductsList* pl, int code, double quantity);
 int main()
 {
-
     return 0;
 }
 
@@ -221,7 +223,7 @@ int findProductByCode(ProductsList* pl, int code)
     return pos;
 }
 
-int findProductByQuantity(ProductsList* pl, int quantity)
+int findProductByQuantity(ProductsList* pl, double quantity)
 {
      int pos = -1;
     for(int i = 0; i < pl->len; i++)
@@ -234,3 +236,20 @@ int findProductByQuantity(ProductsList* pl, int quantity)
     }
     return pos;
 }
+
+//returns true if the demanded quantity <= existing quantity
+bool checkQuantity(ProductsList* pl, int code, double quantity)
+{
+    int pos = findProductByCode(pl, code);
+    if(pos != -1)
+    {
+        if( quantity <= pl->products[pos].quantity)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
