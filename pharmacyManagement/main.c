@@ -155,5 +155,12 @@ PurchasedProduct initPurchasedProduct(int code, double price)
     pp.date.sec = tm.tm_sec;
     return pp;
 }
-
+PurchasedProductsList initPurchasedProductsList()
+{
+    PurchasedProductsList ppl;
+    ppl.len = 0;
+    ppl.pps = calloc(1, sizeof(*ppl.pps));
+    ppl.size = 1;
+    return ppl;
+}
 
