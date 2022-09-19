@@ -51,8 +51,6 @@ ProductsList initProductList();
 PurchasedProduct initPurchasedProduct(int code, double price);
 PurchasedProductsList initPurchasedProductsList();
 
-{
-
 
 //Add a new product
 ProductsList addProduct(ProductsList* pl, Product p);
@@ -75,10 +73,10 @@ ProductsList buyProduct(ProductsList* pl, int code, int productsNumber);
 
 //Search Products By:
 //Coded
-bool findProductByCode(int code);
+int findProductByCode(ProductsList* pl, int code);
 
-//Amount.
-bool findProductByAmmount(int quantity);
+//Quantitiy.
+int findProductByQuantity(ProductsList* pl, int quantity);
 
 //Stock status: allows you to display products whose quantity is less than 3.
 ProductsList stockStatus(ProductsList pl);
@@ -101,9 +99,30 @@ double maxPriceToday(PurchasedProductsList pp);
 
 //Display the Min of the prices of the products sold in the current day
 double minPriceToday(PurchasedProductsList pp);
-}
 int main()
 {
+    ProductsList pl;
+    pl = initProductList();
+
+    Product p;
+    p = initProduct(1, "Amal", 10, 10);
+    addProduct(&pl, p);
+
+
+    p = initProduct(2, "Anass", 20, 12.5);
+    addProduct(&pl, p);
+
+    p = initProduct(3, "Aymen", 30, 15.5);
+    addProduct(&pl, p);
+
+    p = initProduct(4, "Aamen", 40, 20.5);
+    addProduct(&pl, p);
+
+    int pos = findProductByCode(&pl, 40);
+    printf("pos = %i\n",pos);
+    printf("*********%s", pl.products[2].name);
+    //ProductsAlphabeticallyAsc(&pl);
+    ProductsByPriceDesc(&pl);
     return 0;
 }
 
@@ -206,4 +225,19 @@ int ProductsByPriceDesc(ProductsList* pl)
         }
       }
    }
+}
+
+int findProductByCode(ProductsList* pl, int code)
+{
+    int pos = -1;
+    for(int i = 0; i < pl->len; i++)
+    {
+        if(pl->products[i].code == code)
+        {
+            pos = i;
+            return pos;
+        }
+    }
+
+    return pos;
 }
