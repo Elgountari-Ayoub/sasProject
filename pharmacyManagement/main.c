@@ -76,10 +76,10 @@ ProductsList buyProduct(ProductsList* pl, int code, int productsNumber);
 int findProductByCode(ProductsList* pl, int code);
 
 //Quantitiy.
-int findProductByQuantity(ProductsList* pl, double quantity);
+int findProductByQuantity(ProductsList* pl, int quantity);
 
 //Stock status: allows you to display products whose quantity is less than 3.
-ProductsList stockStatus(ProductsList pl);
+ProductsList stockStatus(ProductsList* pl);
 
 //Alimenter le stock: permet de mettre à jour la quantité après avoir introduit le code produit et la quantité à ajouter.
 ProductsList updateStock(ProductsList* pl, int code,  double quantity);
@@ -101,7 +101,7 @@ double maxPriceToday(PurchasedProductsList pp);
 double minPriceToday(PurchasedProductsList pp);
 
 //Helper functions
-bool checkQuantity(ProductsList* pl, int code, double quantity);
+bool checkQuantity(ProductsList* pl, int code, int quantity);
 int main()
 {
     return 0;
@@ -223,7 +223,7 @@ int findProductByCode(ProductsList* pl, int code)
     return pos;
 }
 
-int findProductByQuantity(ProductsList* pl, double quantity)
+int findProductByQuantity(ProductsList* pl, int quantity)
 {
      int pos = -1;
     for(int i = 0; i < pl->len; i++)
@@ -237,8 +237,9 @@ int findProductByQuantity(ProductsList* pl, double quantity)
     return pos;
 }
 
+//***********************Helper functions
 //returns true if the demanded quantity <= existing quantity
-bool checkQuantity(ProductsList* pl, int code, double quantity)
+bool checkQuantity(ProductsList* pl, int code, int quantity)
 {
     int pos = findProductByCode(pl, code);
     if(pos != -1)
@@ -251,5 +252,23 @@ bool checkQuantity(ProductsList* pl, int code, double quantity)
     return false;
 }
 
-
+void displayProduct(Product p)
+{
+    printf("name : %s\n", p.name);
+    printf("code : %\i\n", p.code);
+    printf("price : %lf\n", p.price);
+    printf("quantity : %d\n\n", p.quantity);
+}
+//**********************************************
+//Stock status: allows you to display products whose quantity is less than 3.
+ProductsList stockStatus(ProductsList* pl)
+{
+    for (int i = 0; i < pl->len; i++)
+    {
+        if(pl->products[i].quantity < 3 && pl->products[i].quantity >= 0)
+        {
+            displayProduct(pl->products[i]);
+        }
+    }
+}
 
