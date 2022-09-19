@@ -23,13 +23,35 @@ typedef struct
 
 typedef struct
 {
+    int year;
+    int mon;
+    int day;
+    int hour;
+    int min;
+    int sec;
+}Date;
+
+typedef struct
+{
     int code;
-    double pricTTC;
-    struct tm date;
-}purchasedProducts;
+    double priceTTC;
+    Date date;
+
+}PurchasedProduct;
+
+typedef struct
+{
+    PurchasedProduct* pps;
+    int len;
+    int size;
+}PurchasedProductsList;
 
 Product initProduct(int code, char* name, int quantity, double price);
 ProductsList initProductList();
+PurchasedProduct initPurchasedProduct(int code, double price);
+PurchasedProductsList initPurchasedProductsList();
+
+{
 
 
 //Add a new product
@@ -69,17 +91,17 @@ ProductsList updateStock(ProductsList* pl, int code, int ammount);
 ProductsList DeleteProductByCode(ProductsList* pl, int code);
 
 //Display the total prices of products sold in the current day
-double totalPricesToday(purchasedProducts pp);
+double totalPricesToday(PurchasedProductsList pp);
 
 //Display the average price of products sold on the current day
-double averagePricesToday(purchasedProducts pp);
+double averagePricesToday(PurchasedProductsList pp);
 
 //Display the Max price of products sold on the current day
-double maxPriceToday(purchasedProducts pp);
+double maxPriceToday(PurchasedProductsList pp);
 
 //Display the Min of the prices of the products sold in the current day
-double minPriceToday(purchasedProducts pp);
-
+double minPriceToday(PurchasedProductsList pp);
+}
 
 int main()
 {
@@ -106,4 +128,13 @@ Product initProduct(int code, char* name, int quantity, double price)
     }
 
     return p;
+}
+
+ProductsList initProductList()
+{
+    ProductsList pl;
+    pl.len = 0;
+    pl.products = calloc(1, sizeof(*pl.products));
+    pl.size = 1;
+    return pl;
 }
