@@ -85,3 +85,25 @@ int main()
 {
     return 0;
 }
+
+
+Product initProduct(int code, char* name, int quantity, double price)
+{
+    Product p;
+
+    p.code = code;
+    p.name = malloc(strlen(name) + 1);
+    strcpy(p.name, name);
+
+    if(price >= 0 && quantity >= 0)
+    {
+        p.quantity = quantity;
+        p.price = price;
+    }
+    else
+    {
+        return;
+    }
+
+    return p;
+}
