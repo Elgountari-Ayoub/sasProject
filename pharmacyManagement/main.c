@@ -102,7 +102,6 @@ double maxPriceToday(PurchasedProductsList pp);
 //Display the Min of the prices of the products sold in the current day
 double minPriceToday(PurchasedProductsList pp);
 }
-
 int main()
 {
     return 0;
@@ -138,3 +137,23 @@ ProductsList initProductList()
     pl.size = 1;
     return pl;
 }
+
+PurchasedProduct initPurchasedProduct(int code, double price)
+{
+    PurchasedProduct pp;
+
+    pp.code = code;
+    pp.priceTTC = price * 1.5;
+
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    pp.date.year = tm.tm_year + 1900;
+    pp.date.mon = tm.tm_mon + 1;
+    pp.date.day = tm.tm_mday;
+    pp.date.hour= tm.tm_hour;
+    pp.date.min = tm.tm_min;
+    pp.date.sec = tm.tm_sec;
+    return pp;
+}
+
+
