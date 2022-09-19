@@ -191,3 +191,19 @@ int ProductsAlphabeticallyAsc(ProductsList* pl)
    }
 }
 
+int ProductsByPriceDesc(ProductsList* pl)
+{
+    Product tempP;
+    int len = pl->len;
+    int i,j;
+   for(i=0;i<len;i++){
+      for(j=i+1;j<len;j++){
+        if(pl->products[j].price > pl->products[i].price)
+        {
+            tempP = pl->products[i];
+            pl->products[i] = pl->products[j];
+            pl->products[j] = tempP;
+        }
+      }
+   }
+}
