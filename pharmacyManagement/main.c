@@ -69,7 +69,7 @@ int ProductsByPriceDesc(ProductsList* pl);
 
 //Buy product: allows you to update the quantity after entering the product code and the quantity to be deducted
 //      N.B: For each product purchased, you must record the price including VAT and the date of purchase.
-ProductsList buyProduct(ProductsList* pl, int code, int quantity);
+ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, int quantity);
 
 //Search Products By:
 //Coded
@@ -124,7 +124,6 @@ Product initProduct(int code, char* name, int quantity, double price)
     {
         return;
     }
-
     return p;
 }
 
@@ -142,7 +141,7 @@ PurchasedProduct initPurchasedProduct(int code, double price)
     PurchasedProduct pp;
 
     pp.code = code;
-    pp.priceTTC = price * 1.5;
+    pp.priceTTC = price + (price * 0.15);
 
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
@@ -234,7 +233,7 @@ int findProductByQuantity(ProductsList* pl, int quantity)
     return 0;
 }
 
-//***********************Helper functions
+//***********************Helper functions******************************
 //returns true if the demanded quantity <= existing quantity
 bool checkQuantity(ProductsList* pl, int code, int quantity)
 {
@@ -264,6 +263,15 @@ void displayProducts(ProductsList* pl)
         displayProduct(pl->products[i]);
     }
 }
+
+void addPurchasedProduct(PurchasedProductsList* ppl, PurchasedProduct pp)
+{
+    ppl->size++;
+    ppl->pps = realloc(ppl->pps, ppl->size * sizeof(*ppl->pps));
+    ppl->pps[ppl->len] = pp;
+    ppl->len++;
+
+}
 //**********************************************
 //Stock status: allows you to display products whose quantity is less than 3.
 ProductsList stockStatus(ProductsList* pl)
@@ -289,7 +297,6 @@ ProductsList updateStock(ProductsList* pl, int code,  int quantity)
     }
     return *pl;
 }
-
 //Supprimer les produits par:
 //Code
 ProductsList DeleteProductByCode(ProductsList* pl, int code)
@@ -301,11 +308,34 @@ ProductsList DeleteProductByCode(ProductsList* pl, int code)
         {
             pl->products[i] = pl->products[i+1];
         }
-
         pl->size--;
         pl->products = realloc(pl->products, (pl->size) * sizeof(*pl->products));
         pl->len--;
         return *pl;
 
     }
+}
+
+ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, int quantity)
+{
+    bool isInStock = checkQuantity(pl, code, quantity);
+
+    if(isInStock)
+    {
+        int pos = findProductByCode(pl, code);
+
+        int code = pl->products[pos].code;
+        double priceTTC =  pl->products[pos].price + (pl->products[pos].price * 0.15);
+
+        PurchasedProduct pp;
+        pp = initPurchasedProduct(code, priceTTC);
+
+        addPurchasedProduct(ppl,pp);
+
+        //DeleteProductByCode(pl, code);
+
+        pl->products[pos].quantity -= quantity;
+
+    }
+    return *pl;
 }
