@@ -300,6 +300,20 @@ bool isPurchasedToday(PurchasedProduct pp)
     return false;
 
 }
+
+int PurchasedProductCount(PurchasedProductsList* ppl)
+{
+    int count = 0;
+    for (int i = 0; i < ppl->len; i++)
+    {
+        if(isPurchasedToday(ppl->pps[i]))
+        {
+            count++;
+        }
+    }
+    return count;
+
+}
 //**********************************************
 //Stock status: allows you to display products whose quantity is less than 3.
 ProductsList stockStatus(ProductsList* pl)
@@ -378,3 +392,14 @@ double totalPricesToday(PurchasedProductsList* ppl)
     }
     return total;
 }
+
+
+//Display the average price of products sold on the current day
+double averagePricesToday(PurchasedProductsList* ppl)
+{
+    double total = totalPricesToday(ppl);
+    int ppNumber = PurchasedProductCount(ppl);
+    double avg = total/(double)ppNumber;
+    return avg;
+}
+
