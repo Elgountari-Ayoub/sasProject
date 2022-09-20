@@ -101,10 +101,156 @@ double minPriceToday(PurchasedProductsList* ppl);
 
 //Helper functions
 bool checkQuantity(ProductsList* pl, int code, int quantity);
+
+
+
+
+
 int main()
 {
+
+    START:
+        printf("\t\t\t\tWelcome In The Pharmacy Managment System\n\n");
+        mainMenu();
+        searchByMenu();
+        salesStatisticsMenu();
+
+
     return 0;
 }
+
+
+
+
+
+
+
+    //***********************Helper functions******************************
+    void mainMenu()
+    {
+
+        //printf("\t\t ___________________________________________________\n");
+        printf("\t\t 1  - Ajouter un nouveau produit                   \n\n");
+        printf("\t\t 2  - Ajouter plusieurs nouveaux produits          \n\n");
+        printf("\t\t 3  - Lister tous les produits                     \n\n");
+        printf("\t\t 4  - Acheter produit                              \n\n");
+        printf("\t\t 5  - Rechercher les produits Par :                \n\n");
+        printf("\t\t 6  - Etat du stock                                \n\n");
+        printf("\t\t 7  - Alimenter le stock                           \n\n");
+        printf("\t\t 8  - Supprimer les produits par:                  \n\n");
+        printf("\t\t 9  - Statistique de vente:                        \n\n");
+        printf("\t\t 10 - Quitter                                      \n");
+        //printf("\t\t ___________________________________________________\n\n");
+    }
+
+    void searchByMenu()
+    {
+        //printf("\t\t\t\t _______________________________________________\n");
+        printf("\t\t\t\t 1  - Code                                     \n\n");
+        printf("\t\t\t\t 2  - Quantitee                                \n\n");
+        //printf("\t\t\t\t _______________________________________________\n\n");
+    }
+
+    void salesStatisticsMenu()
+    {
+        //printf("\t\t\t\t _______________________________________________\n");
+        printf("\t\t\t\t 1  - Afficher le total des prix des produits vendus en journee courante   \n\n");
+        printf("\t\t\t\t 2  - Afficher la moyenne des prix des produits vendus en journee courante \n\n");
+        printf("\t\t\t\t 3  - Afficher le Max des prix des produits vendus en journee courante     \n\n");
+        printf("\t\t\t\t 4  - Afficher le Min des prix des produits vendus en journee courante     \n\n");
+        //printf("\t\t\t\t _______________________________________________\n\n");
+    }
+
+
+
+    //returns true if the demanded quantity <= existing quantity
+    bool checkQuantity(ProductsList* pl, int code, int quantity)
+    {
+        int pos = findProductByCode(pl, code);
+        if(pos != -1)
+        {
+            if( quantity <= pl->products[pos].quantity)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void displayProduct(Product p)
+    {
+        printf("name : %s\n", p.name);
+        printf("code : %\i\n", p.code);
+        printf("price : %lf\n", p.price);
+        printf("quantity : %d\n\n", p.quantity);
+    }
+
+
+    void displayPurchasedProduct(PurchasedProduct pp)
+    {
+        printf("code  : %\i\n", pp.code);
+        printf("price : %lf\n", pp.priceTTC);
+        printf("date  : %d-%d-%d-%d-%d-%d\n\n", pp.date.year, pp.date.mon, pp.date.day, pp.date.hour, pp.date.min ,pp.date.sec);
+    }
+
+    void displayProducts(ProductsList* pl)
+    {
+        for (int i = 0; i < pl->len; i++)
+        {
+            displayProduct(pl->products[i]);
+        }
+    }
+
+    void displayPurchasedProductsList(PurchasedProductsList* ppl)
+    {
+        for (int i = 0; i < ppl->len; i++)
+        {
+            displayPurchasedProduct(ppl->pps[i]);
+        }
+    }
+
+    void addPurchasedProduct(PurchasedProductsList* ppl, PurchasedProduct pp)
+    {
+        ppl->size++;
+        ppl->pps = realloc(ppl->pps, ppl->size * sizeof(*ppl->pps));
+        ppl->pps[ppl->len] = pp;
+        ppl->len++;
+
+    }
+
+
+    bool isPurchasedToday(PurchasedProduct pp)
+    {
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+
+        if(pp.date.year == tm.tm_year + 1900 && pp.date.mon == tm.tm_mon + 1 && pp.date.day == tm.tm_mday )
+        {
+            return true;
+        }
+        return false;
+
+    }
+
+    int PurchasedProductCount(PurchasedProductsList* ppl)
+    {
+        int count = 0;
+        for (int i = 0; i < ppl->len; i++)
+        {
+            if(isPurchasedToday(ppl->pps[i]))
+            {
+                count++;
+            }
+        }
+        return count;
+
+    }
+    //**********************************************
+
+
+
+
+
 
 Product initProduct(int code, char* name, int quantity, double price)
 {
@@ -231,90 +377,6 @@ int findProductByQuantity(ProductsList* pl, int quantity)
     return 0;
 }
 
-//***********************Helper functions******************************
-//returns true if the demanded quantity <= existing quantity
-bool checkQuantity(ProductsList* pl, int code, int quantity)
-{
-    int pos = findProductByCode(pl, code);
-    if(pos != -1)
-    {
-        if( quantity <= pl->products[pos].quantity)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-void displayProduct(Product p)
-{
-    printf("name : %s\n", p.name);
-    printf("code : %\i\n", p.code);
-    printf("price : %lf\n", p.price);
-    printf("quantity : %d\n\n", p.quantity);
-}
-
-
-void displayPurchasedProduct(PurchasedProduct pp)
-{
-    printf("code  : %\i\n", pp.code);
-    printf("price : %lf\n", pp.priceTTC);
-    printf("date  : %d-%d-%d-%d-%d-%d\n\n", pp.date.year, pp.date.mon, pp.date.day, pp.date.hour, pp.date.min ,pp.date.sec);
-}
-
-void displayProducts(ProductsList* pl)
-{
-    for (int i = 0; i < pl->len; i++)
-    {
-        displayProduct(pl->products[i]);
-    }
-}
-
-void displayPurchasedProductsList(PurchasedProductsList* ppl)
-{
-    for (int i = 0; i < ppl->len; i++)
-    {
-        displayPurchasedProduct(ppl->pps[i]);
-    }
-}
-
-void addPurchasedProduct(PurchasedProductsList* ppl, PurchasedProduct pp)
-{
-    ppl->size++;
-    ppl->pps = realloc(ppl->pps, ppl->size * sizeof(*ppl->pps));
-    ppl->pps[ppl->len] = pp;
-    ppl->len++;
-
-}
-
-
-bool isPurchasedToday(PurchasedProduct pp)
-{
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-
-    if(pp.date.year == tm.tm_year + 1900 && pp.date.mon == tm.tm_mon + 1 && pp.date.day == tm.tm_mday )
-    {
-        return true;
-    }
-    return false;
-
-}
-
-int PurchasedProductCount(PurchasedProductsList* ppl)
-{
-    int count = 0;
-    for (int i = 0; i < ppl->len; i++)
-    {
-        if(isPurchasedToday(ppl->pps[i]))
-        {
-            count++;
-        }
-    }
-    return count;
-
-}
-//**********************************************
 //Stock status: allows you to display products whose quantity is less than 3.
 ProductsList stockStatus(ProductsList* pl)
 {
