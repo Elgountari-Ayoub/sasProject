@@ -403,3 +403,19 @@ double averagePricesToday(PurchasedProductsList* ppl)
     return avg;
 }
 
+//Display the Max price of products sold on the current day
+double maxPriceToday(PurchasedProductsList* ppl)
+{
+    double max = ppl->pps[0].priceTTC;
+    for (int i = 1; i < ppl->len; i++)
+    {
+        if(ppl->pps[i].priceTTC > max)
+        {
+            max = ppl->pps[i].priceTTC;
+        }
+    }
+    return max;
+}
+
+
+
