@@ -88,16 +88,16 @@ ProductsList updateStock(ProductsList* pl, int code,  int quantity);
 ProductsList DeleteProductByCode(ProductsList* pl, int code);
 
 //Display the total prices of products sold in the current day
-double totalPricesToday(PurchasedProductsList* pp);
+double totalPricesToday(PurchasedProductsList* ppl);
 
 //Display the average price of products sold on the current day
-double averagePricesToday(PurchasedProductsList* pp);
+double averagePricesToday(PurchasedProductsList* ppl);
 
 //Display the Max price of products sold on the current day
-double maxPriceToday(PurchasedProductsList* pp);
+double maxPriceToday(PurchasedProductsList* ppl);
 
 //Display the Min of the prices of the products sold in the current day
-double minPriceToday(PurchasedProductsList* pp);
+double minPriceToday(PurchasedProductsList* ppl);
 
 //Helper functions
 bool checkQuantity(ProductsList* pl, int code, int quantity);
@@ -117,7 +117,7 @@ Product initProduct(int code, char* name, int quantity, double price)
     if(price >= 0 && quantity >= 0)
     {
         p.quantity = quantity;
-        p.price = price;
+        p.price = price;////p.price = price;
     }
     else
     {
@@ -274,9 +274,7 @@ void displayPurchasedProductsList(PurchasedProductsList* ppl)
 {
     for (int i = 0; i < ppl->len; i++)
     {
-        printf("len = %i\n",ppl->len);
         displayPurchasedProduct(ppl->pps[i]);
-
     }
 }
 
@@ -341,7 +339,7 @@ ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, 
         int pos = findProductByCode(pl, code);
 
         int code = pl->products[pos].code;
-        double price =  pl->products[pos].price;
+        double price =  pl->products[pos].price * quantity;
 
         PurchasedProduct pp;
         pp = initPurchasedProduct(code, price);
@@ -355,12 +353,15 @@ ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, 
 }
 
 //Display the total prices of products sold in the current day
-double totalPricesToday(PurchasedProductsList* pp)
+double totalPricesToday(PurchasedProductsList* ppl)
 {
     double total = 0;
-    for (int i = 0; i < pp->len; i++)
+    printf("len = %d\n", ppl->len);
+    for (int i = 0; i < ppl->len; i++)
     {
-        total += pp->pps[i].priceTTC;
+    //printf("total = %f\n", ppl->pps[i].priceTTC);
+
+        total += ppl->pps[i].priceTTC;
     }
     return total;
 }
