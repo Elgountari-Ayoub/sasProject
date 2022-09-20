@@ -286,6 +286,20 @@ void addPurchasedProduct(PurchasedProductsList* ppl, PurchasedProduct pp)
     ppl->len++;
 
 }
+
+
+bool isPurchasedToday(PurchasedProduct pp)
+{
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+
+    if(pp.date.year == tm.tm_year + 1900 && pp.date.mon == tm.tm_mon + 1 && pp.date.day == tm.tm_mday )
+    {
+        return true;
+    }
+    return false;
+
+}
 //**********************************************
 //Stock status: allows you to display products whose quantity is less than 3.
 ProductsList stockStatus(ProductsList* pl)
@@ -347,7 +361,6 @@ ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, 
         addPurchasedProduct(ppl,pp);
 
         pl->products[pos].quantity -= quantity;
-
     }
     return *pl;
 }
@@ -356,12 +369,12 @@ ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, 
 double totalPricesToday(PurchasedProductsList* ppl)
 {
     double total = 0;
-    printf("len = %d\n", ppl->len);
     for (int i = 0; i < ppl->len; i++)
     {
-    //printf("total = %f\n", ppl->pps[i].priceTTC);
-
-        total += ppl->pps[i].priceTTC;
+        if(isPurchasedToday(ppl->pps[i]))
+        {
+            total += ppl->pps[i].priceTTC;
+        }
     }
     return total;
 }
