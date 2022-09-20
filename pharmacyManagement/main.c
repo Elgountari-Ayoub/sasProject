@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include <stdbool.h>
+#include <windows.h>
 //******************************GLOBAL DECLARATION
 
 //A product is identified by: its code, its name, its quantity, and its price.
@@ -53,7 +54,7 @@ PurchasedProductsList initPurchasedProductsList();
 
 
 //Add a new product
-ProductsList addProduct(ProductsList* pl, Product p);
+void addProduct(ProductsList* pl, Product p);
 
 //Add many new products
 //ProductsList addProducts(ProductsList *pl, int productsNumber);
@@ -68,24 +69,24 @@ int ProductsByPriceDesc(ProductsList* pl);
 
 //Buy product: allows you to update the quantity after entering the product code and the quantity to be deducted
 //      N.B: For each product purchased, you must record the price including VAT and the date of purchase.
-ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, int quantity);
+bool buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, int quantity);
 
 //Search Products By:
 //Coded
 int findProductByCode(ProductsList* pl, int code);
 
 //Quantitiy.
-int findProductByQuantity(ProductsList* pl, int quantity);
+bool findProductByQuantity(ProductsList* pl, int quantity);
 
 //Stock status: allows you to display products whose quantity is less than 3.
-ProductsList stockStatus(ProductsList* pl);
+bool stockStatus(ProductsList* pl);
 
 //Alimenter le stock: permet de mettre à jour la quantité après avoir introduit le code produit et la quantité à ajouter.
-ProductsList updateStock(ProductsList* pl, int code,  int quantity);
+bool updateStock(ProductsList* pl, int code,  int quantity);
 
 //Supprimer les produits par:
 //Code
-ProductsList DeleteProductByCode(ProductsList* pl, int code);
+bool DeleteProductByCode(ProductsList* pl, int code);
 
 //Display the total prices of products sold in the current day
 double totalPricesToday(PurchasedProductsList* ppl);
@@ -108,36 +109,252 @@ bool checkQuantity(ProductsList* pl, int code, int quantity);
 
 int main()
 {
+    Product p;
+    ProductsList pl;
+    PurchasedProduct pp;
+    PurchasedProductsList ppl;
+
+    pl = initProductList();
+    ppl = initPurchasedProductsList();
+
+    int code;
+    char name[20];
+    int quantity;
+    double price;
+
+    ////////////
+    int productsNumber; // store the number of the products that the user want to store.
+
+    int op;//operation
+    int subOp;
+    int pos; //store the position of a product in the product list
+    bool isBought;//store true if a product bought, other ways store false;
+    bool isDone;
+    ///////////
+    double total, avg, min, max;
+
+
 
     START:
-        printf("\t\t\t\tWelcome In The Pharmacy Managment System\n\n");
+        system("cls");
         mainMenu();
-        searchByMenu();
-        salesStatisticsMenu();
+        printf("=> ");
+        scanf("%d", &op);
 
+        switch(op)
+        {
+            case 1:
+                printf("nom      : ");
+                scanf("%s", name);
+
+                printf("code     : ");
+                scanf("%d", &code);
+
+                printf("price    : ");
+                scanf("%lf", &price);
+
+                printf("quantity : ");
+                scanf("%d", &quantity);
+
+                p = initProduct(code, name, quantity, price);
+                addProduct(&pl, p);
+                //displayProduct(p);
+                pressKey();
+                goto START;
+            case 2:
+                printf("nombre des produits : ");
+                scanf("%d", &productsNumber);
+                for (int i = 0; i <productsNumber; i++)
+                {
+                    printf("nom      : ");
+                    scanf("%s", name);
+
+                    printf("code     : ");
+                    scanf("%d", &code);
+
+                    printf("price    : ");
+                    scanf("%lf", &price);
+
+                    printf("quantity : ");
+                    scanf("%d", &quantity);
+
+                    p = initProduct(code, name, quantity, price);
+                    addProduct(&pl, p);
+                    printf("\n");
+                }
+                //displayProducts(pl);
+                pressKey();
+                goto START;
+            case 3:
+                sortByMenu();
+                printf("=> ");
+                scanf("%d", &subOp);
+                switch(subOp)
+                {
+                    case 1:
+                        ProductsAlphabeticallyAsc(&pl);
+                        printf("\n\n");
+                        displayProducts(pl);
+                        pressKey();
+                        goto START;
+                    case 2:
+                        ProductsByPriceDesc(&pl);
+                        printf("\n\n");
+                        displayProducts(pl);
+                        pressKey();
+                        goto START;
+                    default:
+                        printf("Invalis input, ");
+                        pressKey();
+                        goto START;
+                }
+            case 4:
+                printf("code : ");
+                scanf("%d", &code);
+
+                printf("quantity : ");
+                scanf("%d", &quantity);
+                isBought = buyProduct(&pl, &ppl, code, quantity);
+                if(isBought)
+                {
+                    printf("operation reussie\n");
+                }
+                else
+                {
+                    printf("Le operation a echoue\n");
+                }
+                //displayPurchasedProductsList(&ppl);
+                pressKey();
+                goto START;
+            case 5:
+                searchByMenu();
+                printf("=> ");
+                scanf("%d", &subOp);
+                switch(subOp)
+                {
+                    case 1:
+                        printf("code = ");
+                        scanf("%d", &code);
+                        pos = findProductByCode(&pl, code);
+                        if(pos != -1)
+                        {
+                            printf("\n\n");
+                            displayProduct(pl.products[pos]);
+                        }
+                        else
+                        {
+                            printf("le produit de code %d ne exist pas dans la list des produit >:\n", code);
+                        }
+                        pressKey();
+                        goto START;
+                    case 2:
+                        printf("Quantitee = ");
+                        scanf("%d", &quantity);
+                        isDone = findProductByQuantity(&pl, quantity);
+                        if(!isDone)
+                        {
+                            printf("le produit de quantity %d ne exist pas dans la list des produit >:\n", quantity);
+                        }
+                        pressKey();
+                        goto START;
+                    default:
+                        printf("Invalis input, ");
+                        pressKey();
+                        goto START;
+                }
+
+             case 6 :
+                isDone = stockStatus(&pl);
+                if(!isDone)
+                {
+                    printf("Le operation a echoue\n");
+                }
+                pressKey();
+                goto START;
+
+            case 7:
+                printf("code = ");
+                scanf("%d", &code);
+
+                printf("Quantitee = ");
+                scanf("%d", &quantity);
+                isDone =  updateStock(&pl, code, quantity);
+                if(isDone)
+                {
+                    printf("operation reussie\n");
+                }
+                else
+                {
+                    printf("Le operation a echoue\n");
+                }
+                pressKey();
+                goto START;
+            case 8:
+                printf("code = ");
+                scanf("%d", &code);
+
+                isDone = DeleteProductByCode(&pl, code);
+                if(isDone)
+                {
+                    printf("operation reussie\n");
+                }
+                else
+                {
+                    printf("Le operation a echoue\n");
+                }
+                pressKey();
+                goto START;
+
+            case 9:
+                salesStatisticsMenu();
+                printf("=> ");
+                scanf("%d", &subOp);
+
+                switch(subOp)
+                {
+                    case 1 :
+                        total = totalPricesToday(&ppl);
+                        printf("le total des prix des produits vendus en journee courante = %f\n", total);
+                        pressKey();
+                        goto START;
+                    case 2 :
+                        avg = averagePricesToday(&ppl);
+                        printf("Afficher la moyenne des prix des produits vendus en journee courante = %f\n", avg);
+                        pressKey();
+                        goto START;
+                    case 3:
+                        min = minPriceToday(&ppl);
+                        printf("Afficher le Min des prix des produits vendus en journee courante = %f\n", min);
+                        pressKey();
+                        goto START;
+                    case 4:
+                        max = maxPriceToday(&ppl);
+                        printf("Afficher le Max des prix des produits vendus en journee courante = %f\n", max);
+                        pressKey();
+                        goto START;
+
+                }
+
+            case 10:
+                printf("Merci pour la visite\n");
+                return 0;
+        }
 
     return 0;
 }
-
-
-
-
-
-
-
     //***********************Helper functions******************************
     void mainMenu()
     {
-
+        printf("\t\t\t\tWelcome In The Pharmacy Managment System\n\n");
         //printf("\t\t ___________________________________________________\n");
         printf("\t\t 1  - Ajouter un nouveau produit                   \n\n");
         printf("\t\t 2  - Ajouter plusieurs nouveaux produits          \n\n");
-        printf("\t\t 3  - Lister tous les produits                     \n\n");
+        printf("\t\t 3  - Lister tous les produits par:                \n\n");
         printf("\t\t 4  - Acheter produit                              \n\n");
         printf("\t\t 5  - Rechercher les produits Par :                \n\n");
         printf("\t\t 6  - Etat du stock                                \n\n");
         printf("\t\t 7  - Alimenter le stock                           \n\n");
-        printf("\t\t 8  - Supprimer les produits par:                  \n\n");
+        printf("\t\t 8  - Supprimer les produits par code              \n\n");
         printf("\t\t 9  - Statistique de vente:                        \n\n");
         printf("\t\t 10 - Quitter                                      \n");
         //printf("\t\t ___________________________________________________\n\n");
@@ -148,6 +365,13 @@ int main()
         //printf("\t\t\t\t _______________________________________________\n");
         printf("\t\t\t\t 1  - Code                                     \n\n");
         printf("\t\t\t\t 2  - Quantitee                                \n\n");
+        //printf("\t\t\t\t _______________________________________________\n\n");
+    }
+    void sortByMenu()
+    {
+        //printf("\t\t\t\t _______________________________________________\n");
+        printf("\t\t\t\t 1  - lister tous les produits selon le ordre alphabetique  croissant du nom.\n\n");
+        printf("\t\t\t\t 2  - lister tous les produits selon le ordre  decroissant du prix\n\n");
         //printf("\t\t\t\t _______________________________________________\n\n");
     }
 
@@ -161,7 +385,11 @@ int main()
         //printf("\t\t\t\t _______________________________________________\n\n");
     }
 
-
+    void pressKey()
+    {
+        printf("Press any key to continue...\n");
+        getch();
+    }
 
     //returns true if the demanded quantity <= existing quantity
     bool checkQuantity(ProductsList* pl, int code, int quantity)
@@ -308,13 +536,13 @@ PurchasedProductsList initPurchasedProductsList()
 }
 
 //Add a new product
-ProductsList addProduct(ProductsList* pl, Product p)
+void addProduct(ProductsList* pl, Product p)
 {
     pl->size++;
     pl->products = realloc(pl->products, (pl->size) * sizeof(*pl->products));
     pl->products[pl->len] = p;
     pl->len++;
-    return *pl;
+
 }
 
 int ProductsAlphabeticallyAsc(ProductsList* pl)
@@ -365,45 +593,48 @@ int findProductByCode(ProductsList* pl, int code)
     return pos;
 }
 
-int findProductByQuantity(ProductsList* pl, int quantity)
+bool findProductByQuantity(ProductsList* pl, int quantity)
 {
+    bool exist = false;
     for(int i = 0; i < pl->len; i++)
     {
         if(pl->products[i].quantity == quantity)
         {
+            exist = true;
             displayProduct(pl->products[i]);
         }
     }
-    return 0;
+    return exist;
 }
 
 //Stock status: allows you to display products whose quantity is less than 3.
-ProductsList stockStatus(ProductsList* pl)
+bool stockStatus(ProductsList* pl)
 {
     for (int i = 0; i < pl->len; i++)
     {
         if(pl->products[i].quantity < 3 && pl->products[i].quantity >= 0)
         {
             displayProduct(pl->products[i]);
+            return true;
         }
     }
-    return *pl;
+    return false;
 }
 
 //Alimenter le stock: permet de mettre à jour la quantité après avoir introduit le code produit et la quantité à ajouter.
-ProductsList updateStock(ProductsList* pl, int code,  int quantity)
+bool updateStock(ProductsList* pl, int code,  int quantity)
 {
     int pos = findProductByCode(pl, code);
     if(pos != -1 && quantity >= 0)
     {
-        printf("pos = %i\n", pos);
         pl->products[pos].quantity += quantity;
+        return true;
     }
-    return *pl;
+    return false;
 }
 //Supprimer les produits par:
 //Code
-ProductsList DeleteProductByCode(ProductsList* pl, int code)
+bool DeleteProductByCode(ProductsList* pl, int code)
 {
     int pos = findProductByCode(pl, code);
     if(pos != -1)
@@ -415,12 +646,13 @@ ProductsList DeleteProductByCode(ProductsList* pl, int code)
         pl->size--;
         pl->products = realloc(pl->products, (pl->size) * sizeof(*pl->products));
         pl->len--;
-        return *pl;
+        return true;
 
     }
+    return false;
 }
 
-ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, int quantity)
+bool buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, int quantity)
 {
     bool isInStock = checkQuantity(pl, code, quantity);
 
@@ -437,8 +669,10 @@ ProductsList buyProduct(ProductsList* pl, PurchasedProductsList* ppl, int code, 
         addPurchasedProduct(ppl,pp);
 
         pl->products[pos].quantity -= quantity;
+
+        return true;
     }
-    return *pl;
+    return false;;
 }
 
 //Display the total prices of products sold in the current day
