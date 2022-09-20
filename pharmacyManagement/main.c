@@ -417,5 +417,19 @@ double maxPriceToday(PurchasedProductsList* ppl)
     return max;
 }
 
+//Display the Min of the prices of the products sold in the current day
+double minPriceToday(PurchasedProductsList* ppl)
+{
+    double min = ppl->pps[0].priceTTC;
+    for (int i = 1; i < ppl->len; i++)
+    {
+        if(ppl->pps[i].priceTTC < min)
+        {
+            min = ppl->pps[i].priceTTC;
+        }
+    }
+    return min;
+}
+
 
 
